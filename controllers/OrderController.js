@@ -5,6 +5,8 @@ var fs = require('fs');
 var Promise = require('bluebird');
 
 
+// - - - - - - - - - Promise Methods: - - - - - - - - - - - - - - - 
+
 var fetchFile = function(path){
 	return new Promise(function (resolve, reject){
 
@@ -16,8 +18,26 @@ var fetchFile = function(path){
 				resolve(data); 
 			}
 		});
+	});
+}
 
+var notifyProfiles = function(filters, note, subject){
+	return new Promise(function (resolve, reject){
+		ProfileController.get(filters, false, function(err, results){
+			if (err){
+				reject(err);
+			}
+			else {
+				var recipients = [];
+				for (var i=0; i<results.length; i++){
+					var fetcher = results[i];
+					recipients.push(fetcher.email);
+				}
 
+				EmailManager.sendBatchEmail('info@thegridmedia.com', recipients, subject, note, null);
+				resolve();
+			}
+		});
 	});
 }
 
@@ -77,23 +97,9 @@ module.exports = {
 			fetchFile(path)
 			.then(function(data){
 				var orderSummary = order.summary();
-				var html = data;
-				html = html.replace('{{address}}', orderSummary['address']);
+				var html = data.replace('{{address}}', orderSummary['address']);
 				html = html.replace('{{order}}', orderSummary['order']);
-
-				ProfileController.get({type:'fetcher'}, false, function(err, results){
-					if (err){
-
-					}
-
-					var recipients = [];
-					for (var i=0; i<results.length; i++){
-						var fetcher = results[i];
-						recipients.push(fetcher.email);
-					}
-
-					EmailManager.sendBatchEmail('info@thegridmedia.com', recipients, 'Order Notification Promise!', html, null);
-				});
+				return notifyProfiles({type:'fetcher'}, html, 'AN ORDER CAME IN!!');
 			})
 			.catch(function(err){
 
