@@ -31,6 +31,11 @@ var OrderStore = assign({}, EventEmitter.prototype, {
 		return currentOrder;
 	},
 
+	getOrder: function(orderId){
+		return orders[orderId];
+	},
+
+
 	getOrders: function(format){
 		if (orders == null)
 			return orders;

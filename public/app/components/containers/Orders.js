@@ -2,13 +2,21 @@ var React = require('react');
 var ProfileStore = require('../../stores/ProfileStore');
 var OrderStore = require('../../stores/OrderStore');
 var FetchServerActions = require('../../actions/FetchServerActions');
+var ReactBootstrap = require('react-bootstrap');
+var Modal = ReactBootstrap.Modal;
+
 
 var Orders = React.createClass({
 
 	getInitialState: function(){
 		return {
 			currentUser: ProfileStore.getCurrentUser(),
-			orders: OrderStore.getOrders('array')
+			orders: OrderStore.getOrders('array'),
+			selectedOrder: {
+				order:'',
+				address:''
+			},
+			showModal: false
 		}
 	},
 
@@ -55,6 +63,22 @@ var Orders = React.createClass({
 		FetchServerActions.updateOrder(order.id, {fetcher: this.state.currentUser.id});
 	},
 
+	closeModal: function(){
+		this.setState({
+			showModal: false
+		});
+	},
+
+	showModal: function(event){
+		console.log('show modal: '+event.target.id);
+		event.preventDefault();
+		this.setState({
+			selectedOrder: OrderStore.getOrder(event.target.id),
+			showModal: true
+		});
+
+	},
+
 	render: function(){
 		var orderList = null;
 		var _this = this;
@@ -64,10 +88,10 @@ var Orders = React.createClass({
 			orderList = this.state.orders.map(function(order, i){
 
 				if (order.fetcher.length > 0){ // this order is claimed
-					row = <tr key={i}><td>{i+1}</td><td>{order.order}</td><td>{order.address}</td><td>{order.status}</td><td><button onClick={_this.claimOrder} id={i} className="btn btn-danger">Claimed</button></td></tr>;
+					row = <tr key={i}><td>{i+1}</td><td><a onClick={_this.showModal} id={order.id} href="#">{order.order}</a></td><td>{order.address}</td><td>{order.status}</td><td><button onClick={_this.claimOrder} id={i} className="btn btn-danger">Claimed</button></td></tr>;
 				}
 				else {
-					row = <tr key={i}><td>{i+1}</td><td>{order.order}</td><td>{order.address}</td><td>{order.status}</td><td><button onClick={_this.claimOrder} id={i} className="btn btn-success">Claim</button></td></tr>;
+					row = <tr key={i}><td>{i+1}</td><td><a onClick={_this.showModal} id={order.id} href="#">{order.order}</a></td><td>{order.address}</td><td>{order.status}</td><td><button onClick={_this.claimOrder} id={i} className="btn btn-success">Claim</button></td></tr>;
 				}
 
 				return row;
@@ -76,7 +100,7 @@ var Orders = React.createClass({
 		}
 
 		return (
-			<div className="container" style={{padding:60, minHeight: 300}}  >
+			<div className="container" style={{padding:60, minHeight: 300}}>
 				<h1>Welcome {this.state.currentUser.firstName.toUpperCase()} <i className="fa fa-thumbs-o-up"></i> ! <br />Please Pick a Delivery Job</h1>
 				<table className="table" style={{fontSize:16 }}>
 				  <thead >
@@ -93,6 +117,20 @@ var Orders = React.createClass({
 				  	{orderList}
 				  </tbody>
 				</table>
+
+		        <Modal show={this.state.showModal} onHide={this.closeModal}>
+			        <Modal.Header closeButton style={{textAlign:'center', padding:32}}>
+			        	<h2>{this.state.selectedOrder.order}</h2>
+			        </Modal.Header>
+			        <Modal.Body>
+			        	<p style={{textAlign:'center'}}>
+			        		{this.state.selectedOrder.address}
+			        	</p>
+			        </Modal.Body>
+
+		        </Modal>
+
+
 			</div>
 		);
 	}
