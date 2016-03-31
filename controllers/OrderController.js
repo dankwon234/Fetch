@@ -2,8 +2,6 @@ var Order = require('../models/Order');
 var EmailManager = require('../managers/EmailManager');
 var FileManager = require('../managers/FileManager');
 var ProfileController = require('../controllers/ProfileController');
-var fs = require('fs');
-var Promise = require('bluebird');
 
 
 module.exports = {
