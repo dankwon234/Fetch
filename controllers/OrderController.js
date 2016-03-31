@@ -21,27 +21,6 @@ var fetchFile = function(path){
 	});
 }
 
-// var notifyProfiles = function(filters, note, subject){
-// 	return new Promise(function (resolve, reject){
-// 		ProfileController.get(filters, false, function(err, results){
-// 			if (err){
-// 				reject(err);
-// 			}
-// 			else {
-// 				var recipients = [];
-// 				for (var i=0; i<results.length; i++){
-// 					var profile = results[i];
-// 					recipients.push(profile.email);
-// 				}
-
-// 				EmailManager.sendBatchEmail('info@thegridmedia.com', recipients, subject, note, null);
-// 				resolve();
-// 			}
-// 		});
-
-// 	});
-// }
-
 
 module.exports = {
 
