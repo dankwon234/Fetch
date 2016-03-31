@@ -11,6 +11,7 @@ var S3_BUCKET = process.env.S3_BUCKET;
 router.get('/:resource', function(req, res, next) {
 
     if (req.params.resource == 'sign_s3'){
+        console.log('GET SIGNED REQUEST: ');
         aws.config.update({accessKeyId: AWS_ACCESS_KEY, secretAccessKey: AWS_SECRET_KEY});
         var s3 = new aws.S3();
         var s3_params = {
