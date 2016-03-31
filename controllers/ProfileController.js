@@ -1,4 +1,6 @@
 var Profile = require('../models/Profile');
+var EmailManager = require('../managers/EmailManager');
+var Promise = require('bluebird');
 var bcrypt = require('bcrypt');
 
 module.exports = {
@@ -68,6 +70,30 @@ module.exports = {
 			}
 
 			completion(null, profile.summary());
+		});
+	},
+
+	// Send batch email to profiles that fit filters:	
+	notifyProfiles: function(filters, note, subject){
+		return new Promise(function (resolve, reject){
+
+			Profile.find(filters, function(err, profiles){
+				if (err){
+					reject(err);
+				}
+				else {
+					var recipients = [];
+					for (var i=0; i<profiles.length; i++){
+						var profile = profiles[i];
+						recipients.push(profile.email);
+					}
+
+					EmailManager.sendBatchEmail('info@thegridmedia.com', recipients, subject, note, null);
+					resolve();
+				}
+
+			});
+
 		});
 	}
 
