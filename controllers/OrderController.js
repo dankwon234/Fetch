@@ -1,25 +1,9 @@
 var Order = require('../models/Order');
 var EmailManager = require('../managers/EmailManager');
+var FileManager = require('../managers/FileManager');
 var ProfileController = require('../controllers/ProfileController');
 var fs = require('fs');
 var Promise = require('bluebird');
-
-
-// - - - - - - - - - Promise Methods: - - - - - - - - - - - - - - - 
-
-var fetchFile = function(path){
-	return new Promise(function (resolve, reject){
-
-		fs.readFile(path, 'utf8', function (err, data) {
-			if (err) {
-				reject(err); 
-			}
-			else { 
-				resolve(data); 
-			}
-		});
-	});
-}
 
 
 module.exports = {
@@ -74,7 +58,7 @@ module.exports = {
 			}
 
 			var path = 'public/email/email.html';
-			fetchFile(path)
+			FileManager.fetchFile(path)
 			.then(function(data){
 				var orderSummary = order.summary();
 				var html = data.replace('{{address}}', orderSummary['address']);
@@ -102,7 +86,7 @@ module.exports = {
 			if (params['fetcher'] != null){
 
 				var path = 'public/email/customernotification.html';
-				fetchFile(path)
+				FileManager.fetchFile(path)
 				.then(function(data){
 					var html = data.replace('{{order}}', order.order);
 					return ProfileController.notifyProfiles({_id: order.customer}, html, 'Your Order is on the Way!');
