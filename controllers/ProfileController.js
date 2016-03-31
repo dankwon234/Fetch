@@ -1,5 +1,6 @@
 var Profile = require('../models/Profile');
 var EmailManager = require('../managers/EmailManager');
+var FileManager = require('../managers/FileManager');
 var Promise = require('bluebird');
 var bcrypt = require('bcrypt');
 
@@ -56,6 +57,19 @@ module.exports = {
 				completion(err, null);
 			    return;
 			}
+
+
+			var path = 'public/email/welcome_email.html';
+			FileManager.fetchFile(path)
+			.then(function(data){
+				var html = data.replace('{{name}}', profile.firstName);
+				EmailManager.sendEmail('info@thegridmedia.com', profile.email, 'Welcome To Fetch!', html, null);
+			})
+			.catch(function(err){
+
+			});
+
+
 
 			completion(null, profile.summary());
 		});
