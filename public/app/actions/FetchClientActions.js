@@ -12,15 +12,24 @@ module.exports = {
 	},
 
 	updateCurrentOrder: function(updatedOrder){
-//		console.log('UPDATE CURRENT ORDER: '+JSON.stringify(updatedOrder));
+		// console.log('UPDATE CURRENT ORDER: '+JSON.stringify(updatedOrder));
 
 		FetchDispatcher.dispatch({
 			type: FetchConstants.CURRENT_ORDER_UPDATED,
 			currentOrder: updatedOrder
 		});
+	},
+
+	updateSelectedOrder: function(updatedOrder){
+		// console.log('UPDATE SELECTED ORDER: '+JSON.stringify(updatedOrder));
+		FetchDispatcher.dispatch({
+			type: FetchConstants.SELECTED_ORDER_UPDATED,
+			selectedOrder: updatedOrder
+		});
 
 
 	}
+
 
 
 }

@@ -32,6 +32,7 @@ var OrderStore = assign({}, EventEmitter.prototype, {
 	},
 
 	getOrder: function(orderId){
+//		console.log('getOrder: '+orderId);
 		return orders[orderId];
 	},
 
@@ -102,6 +103,17 @@ OrderStore.dispatchToken = FetchDispatcher.register(function(action) {
 			orders = {}
 
 		var updatedOrder = action.updatedOrder;
+		orders[updatedOrder.id] = updatedOrder;
+     	OrderStore.emitChange();
+	}
+
+
+	if (action.type == FetchConstants.SELECTED_ORDER_UPDATED){
+		if (orders == null)
+			orders = {}
+
+		var updatedOrder = action.selectedOrder;
+//		console.log('SELECTED_ORDER_UPDATED: '+JSON.stringify(updatedOrder));
 		orders[updatedOrder.id] = updatedOrder;
      	OrderStore.emitChange();
 	}

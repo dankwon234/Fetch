@@ -2,6 +2,7 @@ var React = require('react');
 var ProfileStore = require('../../stores/ProfileStore');
 var OrderStore = require('../../stores/OrderStore');
 var FetchServerActions = require('../../actions/FetchServerActions');
+var FetchClientActions = require('../../actions/FetchClientActions');
 var ReactBootstrap = require('react-bootstrap');
 var Modal = ReactBootstrap.Modal;
 
@@ -13,8 +14,11 @@ var Orders = React.createClass({
 			currentUser: ProfileStore.getCurrentUser(),
 			orders: OrderStore.getOrders('array'),
 			selectedOrder: {
+				id: null,
 				order:'',
-				address:''
+				address:'',
+				fetcher:'',
+				cost: 0
 			},
 			showModal: false
 		}
@@ -45,9 +49,21 @@ var Orders = React.createClass({
 	},
 
 	refreshOrders: function(){
+		if (this.state.selectedOrder.id == null){
+			this.setState({
+				orders: OrderStore.getOrders('array')
+			});
+
+			return;
+		}
+
+		// var order = OrderStore.getOrder(this.state.selectedOrder.id);
+		// console.log(JSON.stringify(order));
+		
 		this.setState({
-			orders: OrderStore.getOrders('array')
-		});
+			orders: OrderStore.getOrders('array'),
+			selectedOrder: OrderStore.getOrder(this.state.selectedOrder.id)
+ 		});
 	},
 
 
@@ -59,7 +75,6 @@ var Orders = React.createClass({
 		}
 
 		console.log('Claim Order: '+JSON.stringify(order));
-
 		FetchServerActions.updateOrder(order.id, {fetcher: this.state.currentUser.id});
 	},
 
@@ -76,7 +91,13 @@ var Orders = React.createClass({
 			selectedOrder: OrderStore.getOrder(event.target.id),
 			showModal: true
 		});
+	},
 
+	updateSelectedOrder: function(event){
+		event.preventDefault();
+		var order = Object.assign({}, this.state.selectedOrder);
+		order['cost'] = event.target.value;
+		FetchClientActions.updateSelectedOrder(order);
 	},
 
 	render: function(){
@@ -126,6 +147,8 @@ var Orders = React.createClass({
 			        	<p style={{textAlign:'center'}}>
 			        		{this.state.selectedOrder.address}
 			        	</p>
+			        	<input onChange={this.updateSelectedOrder} value={this.state.selectedOrder.cost} className="form-control" type="text" placeholder="Cost" />
+			        	<button className="btn btn-success">Done</button>
 			        </Modal.Body>
 
 		        </Modal>
